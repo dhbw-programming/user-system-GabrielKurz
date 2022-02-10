@@ -1,4 +1,12 @@
+#pragma once
 typedef int user_id;
+
+typedef struct
+{
+    char* name;
+    char* email;
+    user_id ID;
+}user;
 
 // initializes a global user table with the given capacity
 void users_initialize_table(int capacity);
@@ -23,6 +31,8 @@ char *users_get_name(user_id id);
 // user ids of other users should not change
 // if user not in table: do nothing
 void users_delete(user_id id);
+// neuen Speicher dafuer allocaten und alten freeen
+
 
 // optional: for really fast teams
 // resize table to keep track of more users or fewer
