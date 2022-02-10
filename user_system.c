@@ -56,6 +56,41 @@ char *users_get_name(user_id id)
 
 void users_delete(user_id id)
 {
+    // TODO handle error when ID not used
+    //TODO how do I free the char pointers separately
+    // find user at the index
+    int index;
+    for(int i = 0; i < usersIndex; i++)
+    {
+        if(users[i].ID == id)
+        {
+            // break out of the loop if ID is found
+            i = index;
+            break;
+        }
+        else index = -1;
+    }
+
+    if(index == -1)
+    {
+        return;
+    }
+
+    // shift all users on the right side of the selected user to the left
+    for(int i = index; i < usersIndex-1; i++)
+    {
+        users[i].email = users[i+1].email;
+        users[i].name = users[i+1].name;
+        users[i].ID = users[i+1].ID;
+    }
+
+    // allocate new mem. with size -1 and free the old memory
+    // store current array in temp pointer (with allocated space)
+    // free old users
+    // allocate mem with size-1 for users
+    // copy temp into users
+    // update index and capacity
+
 }
 
 void users_resize(int new_capacity)
