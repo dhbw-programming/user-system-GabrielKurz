@@ -57,7 +57,7 @@ char *users_get_name(user_id id)
 void users_delete(user_id id)
 {
     // TODO handle error when ID not used
-    //TODO how do I free the char pointers separately
+    //TODO see https://stackoverflow.com/questions/13877546 for freeing char pointers
     // find user at the index
     int index;
     for(int i = 0; i < usersIndex; i++)
