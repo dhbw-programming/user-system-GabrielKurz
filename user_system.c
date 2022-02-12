@@ -56,8 +56,8 @@ char *users_get_name(user_id id)
 
 void users_delete(user_id id)
 {
-    // TODO handle error when ID not used
     //TODO see https://stackoverflow.com/questions/13877546 for freeing char pointers
+
     // find user at the index
     int index;
     for(int i = 0; i < usersIndex; i++)
@@ -70,7 +70,7 @@ void users_delete(user_id id)
         }
         else index = -1;
     }
-
+    // this handles the case where the user ID is not used
     if(index == -1)
     {
         return;
@@ -85,16 +85,36 @@ void users_delete(user_id id)
     }
 
     // allocate new mem. with size -1 and free the old memory
+    user* temp = (user*)malloc(sizeof(user) * usersCapacity);
+    
     // store current array in temp pointer (with allocated space)
-    // free old users
-    // allocate mem with size-1 for users
-    // copy temp into users
-    // update index and capacity
 
+    // if the array is not fully filled up the garbage date will still be copied over into the temp array
+    // this doesn't matter as we can still write to the memory there
+    for(int i = 0; i < usersIndex-1; i++)
+    {
+        temp[i].name = users[i].name;
+        temp[i].email = users[i].email;
+        temp[i].ID = users[i].ID;
+    }
+
+    // free old charpointers watch out for index 0 as this will free users itself
+    free(&users[index].name);
+    free(&users[index].email);
+    
+    // free users
+    free(users);
+
+    //set users equal to temp as temp will disappear after this function is run
+    users = temp;
+    // usersIndex mustnt be updated as this may lead to two users having the same ID
+    // the problem with this approach is that we will not be able to write to the usersIndex -1
+    // and the last member will be duplicated because we copied the whole array into the new one (aforementioned garbage data)
 }
 
 void users_resize(int new_capacity)
 {
+
 }
 
 
