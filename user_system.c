@@ -7,7 +7,6 @@
 // AVAILABLE HERE: Function print_user(id, name, email) to print a single user
 // Make sure to write empty functions for ALL functions in the header (also optional ones),
 // otherwise the program will not compile
-
 user *users;
 int usersCapacity, usersIndex;
 
@@ -20,8 +19,7 @@ void users_initialize_table(int capacity)
 
 user_id users_add(char *name, char *email)
 {
-    // after resize the logic for checking the size is somehow broken
-    // TODO fix comparison
+
     if(usersIndex < usersCapacity)
     {
         users[usersIndex].name = name;
@@ -81,7 +79,6 @@ char *users_get_name(user_id id)
 
 void users_delete(user_id id)
 {
-    //dhbw_print_line("test");
     //TODO see https://stackoverflow.com/questions/13877546 for freeing char pointers
 
     // find user at the index
@@ -102,24 +99,19 @@ void users_delete(user_id id)
         return;
     }
 
-    dhbw_print_integer("deleting user", index);
-
     // shift all users on the right side of the selected user to the left
     for(int i = index; i < usersIndex-1; i++)
     {
         users[i].email = users[i+1].email;
         users[i].name = users[i+1].name;
         users[i].ID = users[i+1].ID;
-    }
-
-    // TODO delete last item in array to avoid duplication
-    
+    }    
 
     // allocate new memory
     user *temp = (user*)malloc(sizeof(user) * usersCapacity);
     
     // store current array in temp pointer (with allocated space)
-   // dont copy the whole array as we dont want to duplicate the last arrayIndex's value
+    // dont copy the whole array as we dont want to duplicate the last arrayIndex's value
     for(int i = 0; i < usersIndex-1; i++)
     {
         temp[i].name = users[i].name;
@@ -138,18 +130,18 @@ void users_delete(user_id id)
     // free users (dont really know if this is necessary as i free the name a index 0 which is equal to users itself)
     free(users);
 
-    //set users equal to temp as temp will disappear after this function is run
+    //set users equal to temp to get pointer to the new array
     users = temp;
 
     // decrease usersIndex by one as there is one less user in the array now
     usersIndex--;
-    // is it safe to not free temp? I think it should work if we just free users at the end, not really shure
+    // is it safe to not free temp? I think it should work if we just free users at the end, not really sure
 }
 
 void users_resize(int new_capacity)
 {
     // check if the size fits
-    if(usersIndex < new_capacity)
+    if(usersIndex > new_capacity)
         return;
 
     // allocate memory with the new size
