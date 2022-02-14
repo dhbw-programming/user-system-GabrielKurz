@@ -7,7 +7,10 @@
 // AVAILABLE HERE: Function print_user(id, name, email) to print a single user
 // Make sure to write empty functions for ALL functions in the header (also optional ones),
 // otherwise the program will not compile
+
+// array that holds the users
 user *users;
+// size of array, current number of users - 1
 int usersCapacity, usersIndex;
 
 void users_initialize_table(int capacity)
@@ -24,24 +27,23 @@ user_id users_add(char *name, char *email)
     {
         users[usersIndex].name = name;
         users[usersIndex].email = email;
-        // had to change this function to work with users_delete()
             
         // compares all available indexes with all currently used numbers in ascending order
-        // as soon as the two are equal the number is already used, if not 
-        int isEqual = 0;
+        // as soon as the two are equal the number is already used and we skip to the next loop iteration
+        int myId = 0;
         for(int i = 0; i <= usersIndex; i++)
         {
             for(int j = 0; j <= usersIndex; j++)
             {
                 if(i != users[j].ID)
-                        isEqual = i;
+                        myId = i;
                 else
                 {
-                    isEqual = -1;
+                    myId = -1;
                     break;
                 }
             }
-            if(isEqual != -1)
+            if(myId != -1)
             {
                 users[usersIndex].ID = i;
                 break;
@@ -79,7 +81,7 @@ char *users_get_name(user_id id)
 
 void users_delete(user_id id)
 {
-    //TODO see https://stackoverflow.com/questions/13877546 for freeing char pointers
+    //see https://stackoverflow.com/questions/13877546 for freeing char pointers
 
     // find user at the index
     int index;
@@ -120,7 +122,7 @@ void users_delete(user_id id)
     }
 
     // free all old charpointers
-    // we should free from first place to 0, as this will free users itself
+    // we should free from last place to 0, as this will free users itself
     for(int i = usersCapacity-1; i >= usersIndex; i--)
     {
         free(users[i].email);
