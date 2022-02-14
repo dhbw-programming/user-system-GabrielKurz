@@ -20,11 +20,36 @@ void users_initialize_table(int capacity)
 
 user_id users_add(char *name, char *email)
 {
+    // after resize the logic for checking the size is somehow broken
+    // TODO fix comparison
     if(usersIndex < usersCapacity)
     {
         users[usersIndex].name = name;
         users[usersIndex].email = email;
-        users[usersIndex].ID = usersIndex;
+        // had to change this function to work with users_delete()
+            
+        // compares all available indexes with all currently used numbers in ascending order
+        // as soon as the two are equal the number is already used, if not 
+        int isEqual = 0;
+        for(int i = 0; i <= usersIndex; i++)
+        {
+            for(int j = 0; j <= usersIndex; j++)
+            {
+                if(i != users[j].ID)
+                        isEqual = i;
+                else
+                {
+                    isEqual = -1;
+                    break;
+                }
+            }
+            if(isEqual != -1)
+            {
+                users[usersIndex].ID = i;
+                break;
+            }
+        }
+            
         usersIndex++;
         return users[usersIndex-1].ID;
     }
@@ -56,6 +81,7 @@ char *users_get_name(user_id id)
 
 void users_delete(user_id id)
 {
+    //dhbw_print_line("test");
     //TODO see https://stackoverflow.com/questions/13877546 for freeing char pointers
 
     // find user at the index
@@ -65,7 +91,7 @@ void users_delete(user_id id)
         if(users[i].ID == id)
         {
             // break out of the loop if ID is found
-            i = index;
+            index = i;
             break;
         }
         else index = -1;
@@ -76,6 +102,8 @@ void users_delete(user_id id)
         return;
     }
 
+    dhbw_print_integer("deleting user", index);
+
     // shift all users on the right side of the selected user to the left
     for(int i = index; i < usersIndex-1; i++)
     {
@@ -84,13 +112,14 @@ void users_delete(user_id id)
         users[i].ID = users[i+1].ID;
     }
 
-    // allocate new mem. with size -1 and free the old memory
-    user* temp = (user*)malloc(sizeof(user) * usersCapacity);
+    // TODO delete last item in array to avoid duplication
+    
+
+    // allocate new memory
+    user *temp = (user*)malloc(sizeof(user) * usersCapacity);
     
     // store current array in temp pointer (with allocated space)
-
-    // if the array is not fully filled up the garbage date will still be copied over into the temp array
-    // this doesn't matter as we can still write to the memory there
+   // dont copy the whole array as we dont want to duplicate the last arrayIndex's value
     for(int i = 0; i < usersIndex-1; i++)
     {
         temp[i].name = users[i].name;
@@ -98,23 +127,54 @@ void users_delete(user_id id)
         temp[i].ID = users[i].ID;
     }
 
-    // free old charpointers watch out for index 0 as this will free users itself
-    free(&users[index].name);
-    free(&users[index].email);
+    // free all old charpointers
+    // we should free from first place to 0, as this will free users itself
+    for(int i = usersCapacity-1; i >= usersIndex; i--)
+    {
+        free(users[i].email);
+        free(users[i].name);
+    }
     
-    // free users
+    // free users (dont really know if this is necessary as i free the name a index 0 which is equal to users itself)
     free(users);
 
     //set users equal to temp as temp will disappear after this function is run
     users = temp;
-    // usersIndex mustnt be updated as this may lead to two users having the same ID
-    // the problem with this approach is that we will not be able to write to the usersIndex -1
-    // and the last member will be duplicated because we copied the whole array into the new one (aforementioned garbage data)
+
+    // decrease usersIndex by one as there is one less user in the array now
+    usersIndex--;
+    // is it safe to not free temp? I think it should work if we just free users at the end, not really shure
 }
 
 void users_resize(int new_capacity)
 {
+    // check if the size fits
+    if(usersIndex < new_capacity)
+        return;
 
+    // allocate memory with the new size
+    user *temp = (user*)malloc(sizeof(user) * new_capacity);
+
+    // copy the contents into the new array
+    for(int i = 0; i < usersIndex; i++)
+    {
+        temp[i].name = users[i].name;
+        temp[i].email = users[i].email;
+        temp[i].ID = users[i].ID;
+    }
+
+    // free the charpointers
+    for(int i = usersCapacity-1; i >= usersIndex; i--)
+    {
+        free(users[i].email);
+        free(users[i].name);
+    }
+
+    // free the old array
+    free(users);
+
+    users = temp;
+    usersCapacity = new_capacity;
 }
 
 
